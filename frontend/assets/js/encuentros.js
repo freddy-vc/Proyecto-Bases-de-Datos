@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function cargarEncuentros() {
-    fetch('../backend/api/encuentros.php?action=listar')
+    fetch('../../backend/api/encuentros.php?action=listar')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Error al obtener los encuentros');

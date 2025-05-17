@@ -1,155 +1,223 @@
 <?php
-// Encabezados requeridos
+/**
+ * API para gestionar equipos
+ */
+
+// Encabezados para CORS y JSON
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
-header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-// Incluir archivos de configuración y controlador
-include_once '../config/database.php';
-include_once '../controllers/equipo_controller.php';
+// Incluir configuración y modelo
+require_once '../models/Equipo.php';
 
-// Instanciar la base de datos y el controlador
-$database = new Database();
-$controller = new EquipoController($database);
+// Crear instancia del modelo
+$equipoModel = new Equipo();
 
 // Obtener el método HTTP
-$method = $_SERVER['REQUEST_METHOD'];
+$requestMethod = $_SERVER["REQUEST_METHOD"];
 
-// Procesar la solicitud según el método HTTP y la acción
-$action = isset($_GET['action']) ? $_GET['action'] : '';
-
-// Respuesta por defecto
-$response = [
-    'status' => 'error',
-    'message' => 'Acción no válida'
-];
-
-switch ($method) {
-    case 'GET':
-        if ($action === 'destacados') {
-            // Obtener equipos destacados
-            $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 3;
-            $equipos = $controller->getDestacados($limit);
-            $response = [
-                'status' => 'success',
-                'data' => $equipos
-            ];
-        } elseif (isset($_GET['id'])) {
-            // Obtener un equipo específico
-            $id = intval($_GET['id']);
-            $equipo = $controller->getById($id);
+try {
+    // Manejar diferentes métodos HTTP
+    switch ($requestMethod) {
+        case 'GET':
+            // Si se proporciona un ID, obtener equipo específico
+            if (isset($_GET['id'])) {
+                $equipo = $equipoModel->getById($_GET['id'], 'cod_equipo');
+                
+                if ($equipo) {
+                    echo json_encode([
+                        "status" => "success",
+                        "data" => $equipo
+                    ]);
+                } else {
+                    http_response_code(404);
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Equipo no encontrado"
+                    ]);
+                }
+            } 
+            // Si se filtra por ciudad
+            elseif (isset($_GET['ciudad'])) {
+                $equipos = $equipoModel->getByCity($_GET['ciudad']);
+                
+                echo json_encode([
+                    "status" => "success",
+                    "data" => $equipos
+                ]);
+            }
+            // Si se solicitan los equipos destacados
+            elseif (isset($_GET['destacados'])) {
+                $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 5;
+                $equipos = $equipoModel->getTopTeams($limit);
+                
+                echo json_encode([
+                    "status" => "success",
+                    "data" => $equipos
+                ]);
+            }
+            // Si no hay parámetros, obtener todos los equipos con info de ciudad
+            else {
+                $equipos = $equipoModel->getAllWithCity();
+                
+                echo json_encode([
+                    "status" => "success",
+                    "data" => $equipos
+                ]);
+            }
+            break;
+            
+        case 'POST':
+            // Verificar si es una solicitud de administrador
+            session_start();
+            if (!isset($_SESSION['user']) || $_SESSION['user']['rol'] !== 'admin') {
+                http_response_code(403);
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "No tiene permisos para realizar esta acción"
+                ]);
+                exit;
+            }
+            
+            // Obtener datos enviados
+            $data = json_decode(file_get_contents("php://input"), true);
+            
+            // Validar datos
+            if (empty($data['nombre']) || empty($data['cod_ciu'])) {
+                http_response_code(400);
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Faltan datos obligatorios (nombre, ciudad)"
+                ]);
+                break;
+            }
+            
+            // Insertar equipo
+            $equipo = $equipoModel->insert($data);
             
             if ($equipo) {
-                $response = [
-                    'status' => 'success',
-                    'data' => $equipo
-                ];
+                http_response_code(201);
+                echo json_encode([
+                    "status" => "success",
+                    "message" => "Equipo creado correctamente",
+                    "data" => $equipo
+                ]);
             } else {
-                $response = [
-                    'status' => 'error',
-                    'message' => 'Equipo no encontrado'
-                ];
+                http_response_code(500);
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Error al crear el equipo"
+                ]);
             }
-        } else {
-            // Obtener todos los equipos
-            $equipos = $controller->getAll();
-            $response = [
-                'status' => 'success',
-                'data' => $equipos
-            ];
-        }
-        break;
-        
-    case 'POST':
-        // Obtener los datos enviados
-        $data = json_decode(file_get_contents("php://input"), true);
-        
-        if (!$data) {
-            // Si no hay datos JSON, intentar obtener de POST
-            $data = $_POST;
-        }
-        
-        // Crear un nuevo equipo
-        $result = $controller->create($data);
-        
-        if ($result === true) {
-            $response = [
-                'status' => 'success',
-                'message' => 'Equipo creado correctamente'
-            ];
-        } else {
-            $response = [
-                'status' => 'error',
-                'message' => $result
-            ];
-        }
-        break;
-        
-    case 'PUT':
-        // Obtener los datos enviados
-        $data = json_decode(file_get_contents("php://input"), true);
-        
-        if (isset($_GET['id'])) {
-            $id = intval($_GET['id']);
+            break;
             
-            // Actualizar el equipo
-            $result = $controller->update($id, $data);
+        case 'PUT':
+            // Verificar si es una solicitud de administrador
+            session_start();
+            if (!isset($_SESSION['user']) || $_SESSION['user']['rol'] !== 'admin') {
+                http_response_code(403);
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "No tiene permisos para realizar esta acción"
+                ]);
+                exit;
+            }
             
-            if ($result === true) {
-                $response = [
-                    'status' => 'success',
-                    'message' => 'Equipo actualizado correctamente'
-                ];
+            // Asegurarse de que se proporciona un ID
+            if (!isset($_GET['id'])) {
+                http_response_code(400);
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Se requiere ID para actualizar"
+                ]);
+                break;
+            }
+            
+            $id = $_GET['id'];
+            $data = json_decode(file_get_contents("php://input"), true);
+            
+            // Validar datos
+            if (empty($data)) {
+                http_response_code(400);
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "No hay datos para actualizar"
+                ]);
+                break;
+            }
+            
+            // Actualizar equipo
+            $equipo = $equipoModel->update($id, $data, 'cod_equipo');
+            
+            if ($equipo) {
+                echo json_encode([
+                    "status" => "success",
+                    "message" => "Equipo actualizado correctamente",
+                    "data" => $equipo
+                ]);
             } else {
-                $response = [
-                    'status' => 'error',
-                    'message' => $result
-                ];
+                http_response_code(500);
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Error al actualizar el equipo"
+                ]);
             }
-        } else {
-            $response = [
-                'status' => 'error',
-                'message' => 'ID de equipo no especificado'
-            ];
-        }
-        break;
-        
-    case 'DELETE':
-        if (isset($_GET['id'])) {
-            $id = intval($_GET['id']);
+            break;
             
-            // Eliminar el equipo
-            $result = $controller->delete($id);
+        case 'DELETE':
+            // Verificar si es una solicitud de administrador
+            session_start();
+            if (!isset($_SESSION['user']) || $_SESSION['user']['rol'] !== 'admin') {
+                http_response_code(403);
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "No tiene permisos para realizar esta acción"
+                ]);
+                exit;
+            }
             
-            if ($result === true) {
-                $response = [
-                    'status' => 'success',
-                    'message' => 'Equipo eliminado correctamente'
-                ];
+            // Asegurarse de que se proporciona un ID
+            if (!isset($_GET['id'])) {
+                http_response_code(400);
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Se requiere ID para eliminar"
+                ]);
+                break;
+            }
+            
+            $id = $_GET['id'];
+            
+            // Eliminar equipo
+            if ($equipoModel->delete($id, 'cod_equipo')) {
+                echo json_encode([
+                    "status" => "success",
+                    "message" => "Equipo eliminado correctamente"
+                ]);
             } else {
-                $response = [
-                    'status' => 'error',
-                    'message' => $result
-                ];
+                http_response_code(500);
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Error al eliminar el equipo"
+                ]);
             }
-        } else {
-            $response = [
-                'status' => 'error',
-                'message' => 'ID de equipo no especificado'
-            ];
-        }
-        break;
-        
-    default:
-        $response = [
-            'status' => 'error',
-            'message' => 'Método no permitido'
-        ];
-        break;
+            break;
+            
+        default:
+            http_response_code(405);
+            echo json_encode([
+                "status" => "error",
+                "message" => "Método no permitido"
+            ]);
+            break;
+    }
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "message" => $e->getMessage()
+    ]);
 }
-
-// Enviar respuesta
-echo json_encode($response);
 ?>

@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.status === 'success') {
                 localStorage.setItem('user', JSON.stringify(data.data)); // Guarda el usuario
-                window.location.href = '../index.html';
+                window.location.href = '../index.php';
             } else {
                 document.getElementById('error-message').textContent = data.message || 'Usuario o contraseña incorrectos.';
                 document.getElementById('error-message').style.display = 'block';

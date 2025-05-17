@@ -3,92 +3,42 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Verificar si el usuario está logueado
-    checkUserSession();
+    // Manejar sesión (ahora se maneja desde PHP)
+    manejarSesion();
     
     // Cargar contenido dinámico según la página actual
     loadPageContent();
 });
 
 /**
- * Verifica si hay una sesión de usuario activa
+ * Funcionalidad para manejar la sesión del usuario
+ * Esta función está vacía porque ahora el manejo de sesión
+ * se realiza completamente desde PHP en nav.php
  */
-function checkUserSession() {
-    // Verificar si hay datos de sesión en localStorage
-    const userData = localStorage.getItem('user');
-    
-    if (userData) {
-        const user = JSON.parse(userData);
-        updateNavForLoggedUser(user);
-    }
-}
-
-/**
- * Actualiza la navegación para usuarios logueados
- */
-function updateNavForLoggedUser(user) {
-    const navMenu = document.querySelector('.menu');
-    
-    // Remover botones de login y registro
-    const loginBtn = document.querySelector('.btn-login').parentElement;
-    const registerBtn = document.querySelector('.btn-registro').parentElement;
-    
-    if (loginBtn && registerBtn) {
-        navMenu.removeChild(loginBtn);
-        navMenu.removeChild(registerBtn);
-        
-        // Agregar nombre de usuario y botón de cerrar sesión
-        const userLi = document.createElement('li');
-        userLi.innerHTML = `<span class="username">Hola, ${user.username}</span>`;
-        
-        const logoutLi = document.createElement('li');
-        logoutLi.innerHTML = `<a href="#" class="btn-logout">Cerrar Sesión</a>`;
-        logoutLi.querySelector('a').addEventListener('click', logout);
-        
-        navMenu.appendChild(userLi);
-        navMenu.appendChild(logoutLi);
-        
-        // Si es admin, agregar enlace al panel de administración
-        if (user.rol === 'admin') {
-            const adminLi = document.createElement('li');
-            adminLi.innerHTML = `<a href="pages/admin/index.html" class="btn-admin">Panel Admin</a>`;
-            navMenu.appendChild(adminLi);
-        }
-    }
-}
-
-/**
- * Cierra la sesión del usuario
- */
-function logout(e) {
-    e.preventDefault();
-    localStorage.removeItem('user');
-    window.location.href = 'index.html';
+function manejarSesion() {
+    // Esta función ahora está vacía porque el manejo de la sesión
+    // se realiza desde el servidor con PHP en nav.php
 }
 
 /**
  * Carga el contenido específico de cada página
  */
 function loadPageContent() {
-    const currentPage = window.location.pathname.split('/').pop();
+    // Obtener la página actual
+    const path = window.location.pathname;
+    const page = path.split('/').pop();
     
-    switch(currentPage) {
-        case '':
-        case 'index.html':
-            loadHomePageContent();
-            break;
-        case 'equipos.html':
-            loadEquiposContent();
-            break;
-        case 'jugadores.html':
-            loadJugadoresContent();
-            break;
-        case 'encuentros.html':
-            loadEncuentrosContent();
-            break;
-        case 'clasificaciones.html':
-            loadClasificacionesContent();
-            break;
+    // Cargar contenido según la página
+    if (path.endsWith('/') || page === 'index.php') {
+        loadHomePageContent();
+    } else if (page === 'equipos.php') {
+        // No es necesario hacer nada ya que equipos.js maneja su propio contenido
+    } else if (page === 'jugadores.php') {
+        // No es necesario hacer nada ya que jugadores.js maneja su propio contenido
+    } else if (page === 'encuentros.php') {
+        // No es necesario hacer nada ya que encuentros.js maneja su propio contenido
+    } else if (page === 'clasificaciones.php') {
+        // No es necesario hacer nada ya que clasificaciones.js maneja su propio contenido
     }
 }
 
@@ -97,109 +47,56 @@ function loadPageContent() {
  */
 function loadHomePageContent() {
     // Cargar próximos partidos
-    fetch('../backend/api/encuentros.php?action=proximos')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
-            return response.json();
-        })
+    fetchAPI('./backend/api/encuentros.php?proximos=true')
         .then(data => {
-            displayProximosPartidos(data);
+            if (data.status === 'success') {
+                displayProximosPartidos(data.data);
+            } else {
+                document.getElementById('proximos-partidos-container').innerHTML = 
+                    '<p class="error-message">No se pudieron cargar los próximos partidos</p>';
+            }
         })
         .catch(error => {
             console.error('Error al cargar próximos partidos:', error);
             document.getElementById('proximos-partidos-container').innerHTML = 
-                '<p class="error-message">No se pudieron cargar los próximos partidos</p>';
+                '<p class="error-message">Error de conexión. Por favor, intente nuevamente.</p>';
         });
     
     // Cargar últimos resultados
-    fetch('../backend/api/encuentros.php?action=ultimos')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
-            return response.json();
-        })
+    fetchAPI('./backend/api/encuentros.php?ultimos=true')
         .then(data => {
-            displayUltimosResultados(data);
+            if (data.status === 'success') {
+                displayUltimosResultados(data.data);
+            } else {
+                document.getElementById('ultimos-resultados-container').innerHTML = 
+                    '<p class="error-message">No se pudieron cargar los últimos resultados</p>';
+            }
         })
         .catch(error => {
             console.error('Error al cargar últimos resultados:', error);
             document.getElementById('ultimos-resultados-container').innerHTML = 
-                '<p class="error-message">No se pudieron cargar los últimos resultados</p>';
+                '<p class="error-message">Error de conexión. Por favor, intente nuevamente.</p>';
         });
     
     // Cargar equipos destacados
-    fetch('../backend/api/equipos.php?action=destacados')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
-            return response.json();
-        })
+    fetchAPI('./backend/api/equipos.php?destacados=true')
         .then(data => {
-            displayEquiposDestacados(data);
+            if (data.status === 'success') {
+                displayEquiposDestacados(data.data);
+            } else {
+                document.getElementById('equipos-destacados-container').innerHTML = 
+                    '<p class="error-message">No se pudieron cargar los equipos destacados</p>';
+            }
         })
         .catch(error => {
             console.error('Error al cargar equipos destacados:', error);
             document.getElementById('equipos-destacados-container').innerHTML = 
-                '<p class="error-message">No se pudieron cargar los equipos destacados</p>';
+                '<p class="error-message">Error de conexión. Por favor, intente nuevamente.</p>';
         });
 }
 
 /**
- * Carga el contenido de la página de encuentros
- */
-function loadEncuentrosContent() {
-    fetch('../backend/api/encuentros.php?action=listar')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al obtener los encuentros');
-            }
-            return response.json();
-        })
-        .then(data => {
-            displayEncuentros(data);
-        })
-        .catch(error => {
-            console.error('Error al cargar encuentros:', error);
-            document.getElementById('encuentros-container').innerHTML = 
-                '<p class="error-message">No se pudieron cargar los encuentros</p>';
-        });
-}
-
-/**
- * Muestra los encuentros en la página
- */
-function displayEncuentros(encuentros) {
-    const container = document.getElementById('encuentros-container');
-    if (!encuentros || encuentros.length === 0) {
-        container.innerHTML = '<p>No hay encuentros programados</p>';
-        return;
-    }
-
-    let html = '';
-    encuentros.forEach(encuentro => {
-        html += `
-            <div class="encuentro-card">
-                <div class="encuentro-fecha">${formatDate(encuentro.fecha)} - ${encuentro.hora}</div>
-                <div class="encuentro-equipos">
-                    <span class="equipo-local">${encuentro.equipo_local}</span>
-                    <span class="vs">VS</span>
-                    <span class="equipo-visitante">${encuentro.equipo_visitante}</span>
-                </div>
-                <div class="encuentro-lugar">${encuentro.cancha}</div>
-                <div class="encuentro-estado">${encuentro.estado}</div>
-            </div>
-        `;
-    });
-
-    container.innerHTML = html;
-}
-
-/**
- * Muestra los próximos partidos en la página principal
+ * Muestra los próximos partidos en la página
  */
 function displayProximosPartidos(partidos) {
     const container = document.getElementById('proximos-partidos-container');
@@ -213,15 +110,16 @@ function displayProximosPartidos(partidos) {
     
     partidos.forEach(partido => {
         html += `
-            <div class="partido-card">
-                <div class="partido-fecha">${formatDate(partido.fecha)} - ${partido.hora}</div>
-                <div class="partido-equipos">
-                    <span class="equipo-local">${partido.equipo_local}</span>
-                    <span class="vs">VS</span>
-                    <span class="equipo-visitante">${partido.equipo_visitante}</span>
-                </div>
-                <div class="partido-lugar">${partido.cancha}</div>
+        <div class="partido-card">
+            <div class="partido-fecha">${formatearFecha(partido.fecha)} - ${formatearHora(partido.hora)}</div>
+            <div class="partido-equipos">
+                <span class="equipo-local">${partido.equipo_local}</span>
+                <span class="vs">VS</span>
+                <span class="equipo-visitante">${partido.equipo_visitante}</span>
             </div>
+            <div class="partido-lugar">${partido.cancha}</div>
+            <a href="./pages/encuentros.php?id=${partido.id}" class="btn-ver-mas">Ver detalles</a>
+        </div>
         `;
     });
     
@@ -229,13 +127,13 @@ function displayProximosPartidos(partidos) {
 }
 
 /**
- * Muestra los últimos resultados en la página principal
+ * Muestra los últimos resultados en la página
  */
 function displayUltimosResultados(resultados) {
     const container = document.getElementById('ultimos-resultados-container');
     
     if (!resultados || resultados.length === 0) {
-        container.innerHTML = '<p>No hay resultados disponibles</p>';
+        container.innerHTML = '<p>No hay resultados recientes</p>';
         return;
     }
     
@@ -243,15 +141,15 @@ function displayUltimosResultados(resultados) {
     
     resultados.forEach(resultado => {
         html += `
-            <div class="resultado-card">
-                <div class="resultado-fecha">${formatDate(resultado.fecha)}</div>
-                <div class="resultado-equipos">
-                    <span class="equipo-local">${resultado.equipo_local}</span>
-                    <span class="resultado">${resultado.goles_local} - ${resultado.goles_visitante}</span>
-                    <span class="equipo-visitante">${resultado.equipo_visitante}</span>
-                </div>
-                <div class="resultado-lugar">${resultado.cancha}</div>
+        <div class="resultado-card">
+            <div class="resultado-fecha">${formatearFecha(resultado.fecha)}</div>
+            <div class="resultado-equipos">
+                <span class="equipo-local">${resultado.equipo_local}</span>
+                <span class="resultado">${resultado.goles_local} - ${resultado.goles_visitante}</span>
+                <span class="equipo-visitante">${resultado.equipo_visitante}</span>
             </div>
+            <a href="./pages/encuentros.php?id=${resultado.id}" class="btn-ver-mas">Ver detalles</a>
+        </div>
         `;
     });
     
@@ -259,13 +157,13 @@ function displayUltimosResultados(resultados) {
 }
 
 /**
- * Muestra los equipos destacados en la página principal
+ * Muestra los equipos destacados en la página
  */
 function displayEquiposDestacados(equipos) {
     const container = document.getElementById('equipos-destacados-container');
     
     if (!equipos || equipos.length === 0) {
-        container.innerHTML = '<p>No hay equipos destacados disponibles</p>';
+        container.innerHTML = '<p>No hay equipos destacados</p>';
         return;
     }
     
@@ -273,14 +171,17 @@ function displayEquiposDestacados(equipos) {
     
     equipos.forEach(equipo => {
         html += `
-            <div class="equipo-card">
-                <div class="equipo-logo">
-                    <img src="${equipo.escudo ? 'data:image/png;base64,' + equipo.escudo : 'assets/img/equipo-default.svg'}" alt="${equipo.nombre}">
-                </div>
-                <h3 class="equipo-nombre">${equipo.nombre}</h3>
-                <div class="equipo-ciudad">${equipo.ciudad}</div>
-                <a href="pages/equipos.html?id=${equipo.cod_equ}" class="btn-ver-mas">Ver más</a>
+        <div class="equipo-card">
+            <div class="equipo-header">
+                ${equipo.escudo ? `<img src="data:image/png;base64,${equipo.escudo}" alt="Escudo ${equipo.nombre}" class="equipo-escudo">` : '<div class="equipo-escudo-placeholder"></div>'}
+                <h3>${equipo.nombre}</h3>
             </div>
+            <div class="equipo-info">
+                <p><strong>Ciudad:</strong> ${equipo.nombre_ciudad}</p>
+                <p><strong>Puntos:</strong> ${equipo.puntos || 0}</p>
+                <a href="./pages/equipos.php?id=${equipo.cod_equipo}" class="btn-ver-mas">Ver detalles</a>
+            </div>
+        </div>
         `;
     });
     
@@ -288,10 +189,95 @@ function displayEquiposDestacados(equipos) {
 }
 
 /**
- * Formatea una fecha en formato legible
+ * Formatear fecha para mostrar
+ * 
+ * @param {string} fechaStr Fecha en formato ISO
+ * @return {string} Fecha formateada
  */
-function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', options);
+function formatearFecha(fechaStr) {
+    const fecha = new Date(fechaStr);
+    return fecha.toLocaleDateString('es-CO', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+}
+
+/**
+ * Formatear hora para mostrar
+ * 
+ * @param {string} horaStr Hora en formato HH:MM:SS
+ * @return {string} Hora formateada
+ */
+function formatearHora(horaStr) {
+    if (!horaStr) return '';
+    
+    const partes = horaStr.split(':');
+    if (partes.length < 2) return horaStr;
+    
+    return `${partes[0]}:${partes[1]}`;
+}
+
+/**
+ * Realiza petición fetch con manejo de errores
+ * 
+ * @param {string} url URL de la petición
+ * @param {Object} options Opciones de fetch
+ * @return {Promise} Promesa con la respuesta
+ */
+async function fetchAPI(url, options = {}) {
+    try {
+        const response = await fetch(url, options);
+        
+        if (!response.ok) {
+            throw new Error(`Error en la respuesta: ${response.status} ${response.statusText}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error en la petición fetch:', error);
+        throw error;
+    }
+}
+
+/**
+ * Muestra una notificación temporal
+ * 
+ * @param {string} mensaje Mensaje a mostrar
+ * @param {string} tipo Tipo de notificación ('success', 'error', 'info')
+ * @param {number} duracion Duración en milisegundos
+ */
+function mostrarNotificacion(mensaje, tipo = 'info', duracion = 3000) {
+    // Eliminar notificaciones previas
+    const notificacionesExistentes = document.querySelectorAll('.notificacion');
+    notificacionesExistentes.forEach(n => n.remove());
+    
+    // Crear elemento de notificación
+    const notificacion = document.createElement('div');
+    notificacion.className = `notificacion ${tipo}`;
+    notificacion.textContent = mensaje;
+    
+    // Agregar botón de cerrar
+    const btnCerrar = document.createElement('span');
+    btnCerrar.className = 'notificacion-cerrar';
+    btnCerrar.innerHTML = '&times;';
+    btnCerrar.addEventListener('click', () => notificacion.remove());
+    
+    notificacion.appendChild(btnCerrar);
+    document.body.appendChild(notificacion);
+    
+    // Animar entrada
+    setTimeout(() => {
+        notificacion.style.opacity = '1';
+        notificacion.style.transform = 'translateY(0)';
+    }, 10);
+    
+    // Eliminar después de la duración especificada
+    if (duracion > 0) {
+        setTimeout(() => {
+            notificacion.style.opacity = '0';
+            notificacion.style.transform = 'translateY(-20px)';
+            setTimeout(() => notificacion.remove(), 300);
+        }, duracion);
+    }
 }

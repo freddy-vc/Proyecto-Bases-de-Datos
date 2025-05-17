@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require_once __DIR__ . '/../db/conexion.php'; // Corrige la ruta del archivo de conexión
+require_once __DIR__ . '/../db/conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['action']) && $_GET['action'] === 'listar') {
@@ -12,18 +12,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                   JOIN Equipos ev ON e.equipo_visitante = ev.cod_equ
                   JOIN Canchas c ON e.cod_cancha = c.cod_cancha";
 
-        $result = pg_query($dbconn, $query);
-
-        if ($result) {
-            $encuentros = pg_fetch_all($result);
+        try {
+            $conexion = new Conexion();
+            $pdo = $conexion->getConexion();
+            
+            $stmt = $pdo->prepare($query);
+            $stmt->execute();
+            $encuentros = $stmt->fetchAll();
+            
             echo json_encode($encuentros);
-        } else {
+            
+            $conexion->cerrarConexion();
+        } catch (Exception $e) {
             http_response_code(500);
-            echo json_encode(['error' => 'Error al obtener los encuentros']);
+            echo json_encode(['error' => 'Error al obtener los encuentros: ' . $e->getMessage()]);
         }
-
-        pg_free_result($result); // Libera el resultado de la consulta
     }
 }
-
-pg_close($dbconn); // Cierra la conexión correctamente
