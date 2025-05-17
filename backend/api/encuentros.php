@@ -1,15 +1,29 @@
 <?php
 header('Content-Type: application/json');
-require_once __DIR__ . '/db/conexion.php';
+require_once __DIR__ . '/../db/conexion.php'; // Corrige la ruta del archivo de conexión
 
-$sql = "SELECT e.id, el.nombre AS equipo_local, ev.nombre AS equipo_visitante, e.fecha, e.hora, c.nombre AS lugar FROM encuentros e JOIN equipos el ON e.equipo_local_id = el.id JOIN equipos ev ON e.equipo_visitante_id = ev.id JOIN canchas c ON e.campo_id = c.id ORDER BY e.fecha, e.hora";
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (isset($_GET['action']) && $_GET['action'] === 'listar') {
+        $query = "SELECT e.cod_encuentro, e.fecha, e.hora, 
+                         el.nombre AS equipo_local, ev.nombre AS equipo_visitante, 
+                         c.nombre AS cancha, e.estado
+                  FROM Encuentros e
+                  JOIN Equipos el ON e.equipo_local = el.cod_equ
+                  JOIN Equipos ev ON e.equipo_visitante = ev.cod_equ
+                  JOIN Canchas c ON e.cod_cancha = c.cod_cancha";
 
-$result = $conn->query($sql);
-$partidos = array();
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $partidos[] = $row;
+        $result = pg_query($dbconn, $query);
+
+        if ($result) {
+            $encuentros = pg_fetch_all($result);
+            echo json_encode($encuentros);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Error al obtener los encuentros']);
+        }
+
+        pg_free_result($result); // Libera el resultado de la consulta
     }
 }
-echo json_encode($partidos);
-$conn->close();
+
+pg_close($dbconn); // Cierra la conexión correctamente
