@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipos - Torneo de Futsala</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .equipos-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .equipo-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .equipo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .equipo-logo {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            padding: 1rem;
+        }
+        
+        .equipo-logo img {
+            max-height: 150px;
+            max-width: 100%;
+        }
+        
+        .equipo-info {
+            padding: 1.5rem;
+        }
+        
+        .equipo-nombre {
+            font-size: 1.5rem;
+            color: #1a3a6e;
+            margin-bottom: 0.5rem;
+        }
+        
+        .equipo-ciudad {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .equipo-dt {
+            font-style: italic;
+            color: #777;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-ver-mas {
+            display: inline-block;
+            background-color: #1a3a6e;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-ver-mas:hover {
+            background-color: #15305d;
+        }
+        
+        .filtros {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filtros select {
+            padding: 0.5rem;
+            margin-right: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .filtros button {
+            padding: 0.5rem 1rem;
+            background-color: #1a3a6e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .loading-message, .error-message {
+            text-align: center;
+            padding: 2rem;
+            grid-column: 1 / -1;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header">
+        <div class="logo-container">
+            <a href="../index.html">
+                <img src="../assets/img/logo.svg" alt="Logo Torneo Futsala" id="logo">
+            </a>
+        </div>
+        <nav>
+            <ul class="menu">
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="clasificaciones.html">Clasificaciones</a></li>
+                <li><a href="encuentros.html">Partidos</a></li>
+                <li><a href="equipos.html">Equipos</a></li>
+                <li><a href="jugadores.html">Jugadores</a></li>
+                <li><a href="login.html" class="btn-login">Iniciar Sesión</a></li>
+                <li><a href="registro.html" class="btn-registro">Registro</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h1>Equipos Participantes</h1>
+            <p>Conoce a todos los equipos que participan en el torneo de futsala de Villavicencio.</p>
+            
+            <div class="filtros">
+                <h3>Filtrar por:</h3>
+                <select id="filtro-ciudad">
+                    <option value="">Todas las ciudades</option>
+                    <!-- Se cargarán dinámicamente -->
+                </select>
+                <button id="btn-filtrar">Filtrar</button>
+            </div>
+            
+            <div class="equipos-container" id="equipos-container">
+                <p class="loading-message">Cargando equipos...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Torneo de Futsala Villavicencio. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si el usuario está logueado
+            checkUserSession();
+            
+            // Cargar ciudades para el filtro
+            cargarCiudades();
+            
+            // Cargar equipos
+            cargarEquipos();
+            
+            // Configurar evento del botón de filtro
+            document.getElementById('btn-filtrar').addEventListener('click', function() {
+                cargarEquipos();
+            });
+        });
+        
+        /**
+         * Verifica si hay una sesión de usuario activa
+         */
+        function checkUserSession() {
+            // Verificar si hay datos de sesión en localStorage
+            const userData = localStorage.getItem('user');
+            
+            if (userData) {
+                const user = JSON.parse(userData);
+                updateNavForLoggedUser(user);
+            }
+        }
+        
+        /**
+         * Actualiza la navegación para usuarios logueados
+         */
+        function updateNavForLoggedUser(user) {
+            const navMenu = document.querySelector('.menu');
+            
+            // Remover botones de login y registro
+            const loginBtn = document.querySelector('.btn-login').parentElement;
+            const registerBtn = document.querySelector('.btn-registro').parentElement;
+            
+            if (loginBtn && registerBtn) {
+                navMenu.removeChild(loginBtn);
+                navMenu.removeChild(registerBtn);
+                
+                // Agregar nombre de usuario y botón de cerrar sesión
+                const userLi = document.createElement('li');
+                userLi.innerHTML = `<span class="username">Hola, ${user.username}</span>`;
+                
+                const logoutLi = document.createElement('li');
+                logoutLi.innerHTML = `<a href="#" class="btn-logout">Cerrar Sesión</a>`;
+                logoutLi.querySelector('a').addEventListener('click', logout);
+                
+                navMenu.appendChild(userLi);
+                navMenu.appendChild(logoutLi);
+                
+                // Si es admin, agregar enlace al panel de administración
+                if (user.rol === 'admin') {
+                    const adminLi = document.createElement('li');
+                    adminLi.innerHTML = `<a href="admin/index.html" class="btn-admin">Panel Admin</a>`;
+                    navMenu.appendChild(adminLi);
+                }
+            }
+        }
+        
+        /**
+         * Cierra la sesión del usuario
+         */
+        function logout(e) {
+            e.preventDefault();
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+        }
+        
+        /**
+         * Carga las ciudades para el filtro
+         */
+        function cargarCiudades() {
+            fetch('../../backend/api/ciudades.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        const selectCiudad = document.getElementById('filtro-ciudad');
+                        
+                        data.data.forEach(ciudad => {
+                            const option = document.createElement('option');
+                            option.value = ciudad.cod_ciu;
+                            option.textContent = ciudad.nombre;
+                            selectCiudad.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar ciudades:', error);
+                });
+        }
+        
+        /**
+         * Carga los equipos según el filtro seleccionado
+         */
+        function cargarEquipos() {
+            const container = document.getElementById('equipos-container');
+            container.innerHTML = '<p class="loading-message">Cargando equipos...</p>';
+            
+            const filtroCiudad = document.getElementById('filtro-ciudad').value;
+            let url = '../../backend/api/equipos.php';
+            
+            if (filtroCiudad) {
+                url += `?ciudad=${filtroCiudad}`;
+            }
+            
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        mostrarEquipos(data.data);
+                    } else {
+                        container.innerHTML = `<p class="error-message">${data.message || 'Error al cargar equipos'}</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar equipos:', error);
+                    container.innerHTML = '<p class="error-message">Error de conexión. Por favor, intente nuevamente.</p>';
+                });
+        }
+        
+        /**
+         * Muestra los equipos en la página
+         */
+        function mostrarEquipos(equipos) {
+            const container = document.getElementById('equipos-container');
+            
+            if (!equipos || equipos.length === 0) {
+                container.innerHTML = '<p>No hay equipos disponibles</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            equipos.forEach(equipo => {
+                html += `
+                    <div class="equipo-card">
+                        <div class="equipo-logo">
+                            <img src="${equipo.escudo ? 'data:image/png;base64,' + equipo.escudo : '../assets/img/equipo-default.svg'}" alt="${equipo.nombre}">
+                        </div>
+                        <div class="equipo-info">
+                            <h3 class="equipo-nombre">${equipo.nombre}</h3>
+                            <div class="equipo-ciudad">${equipo.ciudad_nombre}</div>
+                            <div class="equipo-dt">${equipo.dt_nombres && equipo.dt_apellidos ? 'DT: ' + equipo.dt_nombres + ' ' + equipo.dt_apellidos : 'Sin director técnico asignado'}</div>
+                            <a href="equipo-detalle.html?id=${equipo.cod_equ}" class="btn-ver-mas">Ver más</a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

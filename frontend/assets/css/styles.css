@@ -1,0 +1,160 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header y navegación */
+#main-header {
+    background-color: #1a3a6e;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+#logo {
+    height: 50px;
+    margin-right: 10px;
+}
+
+.menu {
+    display: flex;
+    list-style: none;
+}
+
+.menu li {
+    margin-left: 1.5rem;
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.menu a:hover {
+    color: #ffd700;
+}
+
+.btn-login, .btn-registro {
+    background-color: #ffd700;
+    color: #1a3a6e !important;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.btn-login:hover, .btn-registro:hover {
+    background-color: #ffcc00;
+}
+
+/* Secciones principales */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+section {
+    margin-bottom: 3rem;
+}
+
+.hero {
+    text-align: center;
+    padding: 3rem 0;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #1a3a6e;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+h2 {
+    color: #1a3a6e;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #ffd700;
+}
+
+/* Contenedores de información */
+.partidos-container, .resultados-container, .equipos-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.partido-card, .resultado-card, .equipo-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.partido-card:hover, .resultado-card:hover, .equipo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.loading-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #777;
+    font-style: italic;
+}
+
+/* Footer */
+footer {
+    background-color: #1a3a6e;
+    color: white;
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #main-header {
+        flex-direction: column;
+    }
+    
+    .menu {
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .menu li {
+        margin: 0.5rem;
+    }
+    
+    .partidos-container, .resultados-container, .equipos-container {
+        grid-template-columns: 1fr;
+    }
+}

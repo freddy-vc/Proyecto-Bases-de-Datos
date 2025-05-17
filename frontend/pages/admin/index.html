@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Torneo de Futsala</title>
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #1a3a6e;
+        }
+        
+        .admin-title {
+            color: #1a3a6e;
+        }
+        
+        .admin-user {
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-user img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            background-color: #f5f5f5;
+        }
+        
+        .admin-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-menu-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .admin-menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .admin-menu-item i {
+            font-size: 2rem;
+            color: #1a3a6e;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .admin-menu-item h3 {
+            color: #1a3a6e;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-menu-item p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .admin-menu-item a {
+            display: inline-block;
+            background-color: #1a3a6e;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .admin-menu-item a:hover {
+            background-color: #15305d;
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1a3a6e;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .admin-actions {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .admin-actions h2 {
+            color: #1a3a6e;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #ffd700;
+        }
+        
+        .action-list {
+            list-style: none;
+        }
+        
+        .action-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .action-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .action-list a {
+            color: #1a3a6e;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .action-list a:hover {
+            color: #ffd700;
+        }
+        
+        /* Iconos simulados con caracteres */
+        .icon-equipos::before {
+            content: '🏆';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .icon-jugadores::before {
+            content: '⚽';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .icon-encuentros::before {
+            content: '🏟️';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .icon-ciudades::before {
+            content: '🏙️';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .icon-directores::before {
+            content: '👨‍💼';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .icon-usuarios::before {
+            content: '👥';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header">
+        <div class="logo-container">
+            <a href="../../index.html">
+                <img src="../../assets/img/logo.svg" alt="Logo Torneo Futsala" id="logo">
+            </a>
+        </div>
+        <nav>
+            <ul class="menu">
+                <li><a href="../../index.html">Inicio</a></li>
+                <li><a href="../clasificaciones.html">Clasificaciones</a></li>
+                <li><a href="../encuentros.html">Partidos</a></li>
+                <li><a href="../equipos.html">Equipos</a></li>
+                <li><a href="../jugadores.html">Jugadores</a></li>
+                <li><span class="username" id="username-display">Admin</span></li>
+                <li><a href="#" class="btn-logout" id="btn-logout">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title">Panel de Administración</h1>
+            <div class="admin-user">
+                <img src="" alt="" id="user-avatar">
+                <div>
+                    <p id="user-name">Administrador</p>
+                    <small>Rol: Administrador</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="stat-equipos">0</div>
+                <div class="stat-label">Equipos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-jugadores">0</div>
+                <div class="stat-label">Jugadores</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-encuentros">0</div>
+                <div class="stat-label">Encuentros</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-usuarios">0</div>
+                <div class="stat-label">Usuarios</div>
+            </div>
+        </div>
+        
+        <div class="admin-menu">
+            <div class="admin-menu-item">
+                <span class="icon-equipos"></span>
+                <h3>Equipos</h3>
+                <p>Gestionar equipos del torneo</p>
+                <a href="equipos.html">Administrar</a>
+            </div>
+            <div class="admin-menu-item">
+                <span class="icon-jugadores"></span>
+                <h3>Jugadores</h3>
+                <p>Gestionar jugadores del torneo</p>
+                <a href="jugadores.html">Administrar</a>
+            </div>
+            <div class="admin-menu-item">
+                <span class="icon-encuentros"></span>
+                <h3>Encuentros</h3>
+                <p>Gestionar partidos y resultados</p>
+                <a href="encuentros.html">Administrar</a>
+            </div>
+            <div class="admin-menu-item">
+                <span class="icon-ciudades"></span>
+                <h3>Ciudades</h3>
+                <p>Gestionar ciudades participantes</p>
+                <a href="ciudades.html">Administrar</a>
+            </div>
+            <div class="admin-menu-item">
+                <span class="icon-directores"></span>
+                <h3>Directores Técnicos</h3>
+                <p>Gestionar directores técnicos</p>
+                <a href="directores.html">Administrar</a>
+            </div>
+            <div class="admin-menu-item">
+                <span class="icon-usuarios"></span>
+                <h3>Usuarios</h3>
+                <p>Gestionar usuarios del sistema</p>
+                <a href="usuarios.html">Administrar</a>
+            </div>
+        </div>
+        
+        <div class="admin-actions">
+            <h2>Acciones Rápidas</h2>
+            <ul class="action-list">
+                <li><a href="equipos.html?action=new">Agregar nuevo equipo</a></li>
+                <li><a href="jugadores.html?action=new">Registrar nuevo jugador</a></li>
+                <li><a href="encuentros.html?action=new">Programar nuevo encuentro</a></li>
+                <li><a href="encuentros.html?action=results">Registrar resultados de encuentros</a></li>
+                <li><a href="clasificaciones.html?action=update">Actualizar tabla de clasificación</a></li>
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Torneo de Futsala Villavicencio. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si el usuario está logueado y es administrador
+            checkAdminSession();
+            
+            // Cargar estadísticas
+            loadStats();
+            
+            // Configurar evento de cierre de sesión
+            document.getElementById('btn-logout').addEventListener('click', logout);
+        });
+        
+        /**
+         * Verifica si hay una sesión de administrador activa
+         */
+        function checkAdminSession() {
+            const userData = localStorage.getItem('user');
+            
+            if (userData) {
+                const user = JSON.parse(userData);
+                
+                if (user.rol === 'admin') {
+                    // Mostrar información del usuario
+                    document.getElementById('username-display').textContent = user.username;
+                    document.getElementById('user-name').textContent = user.username;
+                    
+                    if (user.foto_perfil) {
+                        document.getElementById('user-avatar').src = 'data:image/png;base64,' + user.foto_perfil;
+                        document.getElementById('user-avatar').alt = user.username;
+                    }
+                } else {
+                    // Redirigir si no es administrador
+                    window.location.href = '../../index.html';
+                }
+            } else {
+                // Redirigir si no hay sesión
+                window.location.href = '../login.html';
+            }
+        }
+        
+        /**
+         * Cierra la sesión del usuario
+         */
+        function logout(e) {
+            e.preventDefault();
+            localStorage.removeItem('user');
+            window.location.href = '../../index.html';
+        }
+        
+        /**
+         * Carga las estadísticas del sistema
+         */
+        function loadStats() {
+            // En un caso real, estas estadísticas se cargarían desde el backend
+            // Aquí simulamos datos para la demostración
+            
+            // Simular carga de datos
+            setTimeout(() => {
+                document.getElementById('stat-equipos').textContent = '8';
+                document.getElementById('stat-jugadores').textContent = '96';
+                document.getElementById('stat-encuentros').textContent = '12';
+                document.getElementById('stat-usuarios').textContent = '24';
+            }, 500);
+            
+            // En un caso real, se haría una petición al backend
+            /*
+            fetch('../../backend/api/stats.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('stat-equipos').textContent = data.data.equipos;
+                        document.getElementById('stat-jugadores').textContent = data.data.jugadores;
+                        document.getElementById('stat-encuentros').textContent = data.data.encuentros;
+                        document.getElementById('stat-usuarios').textContent = data.data.usuarios;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar estadísticas:', error);
+                });
+            */
+        }
+    </script>
+</body>
+</html>

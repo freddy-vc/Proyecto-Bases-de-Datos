@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Fondo circular -->
+  <circle cx="100" cy="100" r="90" fill="#1a3a6e" />
+  <circle cx="100" cy="100" r="85" fill="#ffffff" />
+  <circle cx="100" cy="100" r="80" fill="#1a3a6e" />
+  
+  <!-- Balón de fútbol estilizado -->
+  <circle cx="100" cy="100" r="40" fill="#ffffff" />
+  
+  <!-- Pentágonos del balón -->
+  <polygon points="100,60 120,75 110,100 90,100 80,75" fill="#000000" />
+  <polygon points="120,75 140,90 125,115 110,100" fill="#000000" />
+  <polygon points="140,90 130,120 110,130 125,115" fill="#000000" />
+  <polygon points="130,120 100,140 90,130 110,130" fill="#000000" />
+  <polygon points="100,140 70,120 90,130" fill="#000000" />
+  <polygon points="70,120 60,90 75,115 90,130" fill="#000000" />
+  <polygon points="60,90 80,75 90,100 75,115" fill="#000000" />
+  
+  <!-- Texto "FUTSALA" -->
+  <text x="100" y="180" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">FUTSALA</text>
+  
+  <!-- Texto "VILLAVICENCIO" -->
+  <text x="100" y="30" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#ffffff">VILLAVICENCIO</text>
+  
+  <!-- Estrella decorativa -->
+  <polygon points="100,15 105,25 115,25 107,35 110,45 100,40 90,45 93,35 85,25 95,25" fill="#ffd700" />
+</svg>

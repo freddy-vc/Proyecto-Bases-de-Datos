@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificaciones - Torneo de Futsala</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .clasificaciones-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .fase-title {
+            color: #1a3a6e;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #ffd700;
+            text-align: center;
+        }
+        
+        .bracket {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+        }
+        
+        .bracket-round {
+            display: flex;
+            flex-direction: column;
+            width: 30%;
+        }
+        
+        .bracket-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            color: #1a3a6e;
+        }
+        
+        .bracket-match {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bracket-team {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .bracket-team:last-child {
+            border-bottom: none;
+        }
+        
+        .team-name {
+            font-weight: bold;
+        }
+        
+        .team-score {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .winner {
+            color: #2ecc71;
+        }
+        
+        .loser {
+            color: #e74c3c;
+        }
+        
+        .bracket-connector {
+            width: 5%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .connector-line {
+            height: 2px;
+            background-color: #ddd;
+            margin: 2rem 0;
+        }
+        
+        .fase-equipos {
+            margin-top: 3rem;
+        }
+        
+        .fase-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .fase-table th, .fase-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .fase-table th {
+            background-color: #1a3a6e;
+            color: white;
+        }
+        
+        .fase-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .clasificado {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .no-clasificado {
+            color: #e74c3c;
+        }
+        
+        .loading-message {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header">
+        <div class="logo-container">
+            <a href="../index.html">
+                <img src="../assets/img/logo.svg" alt="Logo Torneo Futsala" id="logo">
+            </a>
+        </div>
+        <nav>
+            <ul class="menu">
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="clasificaciones.html">Clasificaciones</a></li>
+                <li><a href="encuentros.html">Partidos</a></li>
+                <li><a href="equipos.html">Equipos</a></li>
+                <li><a href="jugadores.html">Jugadores</a></li>
+                <li><a href="login.html" class="btn-login">Iniciar Sesión</a></li>
+                <li><a href="registro.html" class="btn-registro">Registro</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="clasificaciones-container">
+        <h1>Clasificaciones del Torneo</h1>
+        <p>Consulta las fases de eliminación y los equipos clasificados en el torneo de futsala de Villavicencio.</p>
+        
+        <section class="bracket-section">
+            <h2 class="fase-title">Cuadro de Eliminación</h2>
+            
+            <div class="bracket">
+                <div class="bracket-round">
+                    <h3 class="bracket-title">Cuartos de Final</h3>
+                    <div id="cuartos-container">
+                        <p class="loading-message">Cargando cuartos de final...</p>
+                    </div>
+                </div>
+                
+                <div class="bracket-connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-line"></div>
+                </div>
+                
+                <div class="bracket-round">
+                    <h3 class="bracket-title">Semifinales</h3>
+                    <div id="semis-container">
+                        <p class="loading-message">Cargando semifinales...</p>
+                    </div>
+                </div>
+                
+                <div class="bracket-connector">
+                    <div class="connector-line"></div>
+                </div>
+                
+                <div class="bracket-round">
+                    <h3 class="bracket-title">Final</h3>
+                    <div id="final-container">
+                        <p class="loading-message">Cargando final...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="fase-equipos">
+            <h2 class="fase-title">Equipos por Fase</h2>
+            
+            <h3>Cuartos de Final</h3>
+            <table class="fase-table" id="tabla-cuartos">
+                <thead>
+                    <tr>
+                        <th>Equipo</th>
+                        <th>Ciudad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3" class="loading-message">Cargando equipos...</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Semifinales</h3>
+            <table class="fase-table" id="tabla-semis">
+                <thead>
+                    <tr>
+                        <th>Equipo</th>
+                        <th>Ciudad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3" class="loading-message">Cargando equipos...</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Final</h3>
+            <table class="fase-table" id="tabla-final">
+                <thead>
+                    <tr>
+                        <th>Equipo</th>
+                        <th>Ciudad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3" class="loading-message">Cargando equipos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Torneo de Futsala Villavicencio. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si el usuario está logueado
+            checkUserSession();
+            
+            // Cargar datos de clasificación
+            cargarClasificaciones();
+        });
+        
+        /**
+         * Verifica si hay una sesión de usuario activa
+         */
+        function checkUserSession() {
+            // Verificar si hay datos de sesión en localStorage
+            const userData = localStorage.getItem('user');
+            
+            if (userData) {
+                const user = JSON.parse(userData);
+                updateNavForLoggedUser(user);
+            }
+        }
+        
+        /**
+         * Actualiza la navegación para usuarios logueados
+         */
+        function updateNavForLoggedUser(user) {
+            const navMenu = document.querySelector('.menu');
+            
+            // Remover botones de login y registro
+            const loginBtn = document.querySelector('.btn-login').parentElement;
+            const registerBtn = document.querySelector('.btn-registro').parentElement;
+            
+            if (loginBtn && registerBtn) {
+                navMenu.removeChild(loginBtn);
+                navMenu.removeChild(registerBtn);
+                
+                // Agregar nombre de usuario y botón de cerrar sesión
+                const userLi = document.createElement('li');
+                userLi.innerHTML = `<span class="username">Hola, ${user.username}</span>`;
+                
+                const logoutLi = document.createElement('li');
+                logoutLi.innerHTML = `<a href="#" class="btn-logout">Cerrar Sesión</a>`;
+                logoutLi.querySelector('a').addEventListener('click', logout);
+                
+                navMenu.appendChild(userLi);
+                navMenu.appendChild(logoutLi);
+                
+                // Si es admin, agregar enlace al panel de administración
+                if (user.rol === 'admin') {
+                    const adminLi = document.createElement('li');
+                    adminLi.innerHTML = `<a href="admin/index.html" class="btn-admin">Panel Admin</a>`;
+                    navMenu.appendChild(adminLi);
+                }
+            }
+        }
+        
+        /**
+         * Cierra la sesión del usuario
+         */
+        function logout(e) {
+            e.preventDefault();
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+        }
+        
+        /**
+         * Carga los datos de clasificación
+         */
+        function cargarClasificaciones() {
+            // En un caso real, estos datos se cargarían desde el backend
+            // Aquí simulamos datos para la demostración
+            
+            // Simular carga de datos
+            setTimeout(() => {
+                // Datos simulados para cuartos de final
+                const cuartos = [
+                    { local: 'Deportivo Meta', visitante: 'Atlético Villavicencio', resultado_local: 3, resultado_visitante: 1 },
+                    { local: 'Real Centauros', visitante: 'Llaneros FC', resultado_local: 2, resultado_visitante: 2 },
+                    { local: 'Independiente Guamal', visitante: 'Deportivo Acacías', resultado_local: 0, resultado_visitante: 2 },
+                    { local: 'Alianza Oriental', visitante: 'Halcones FC', resultado_local: 4, resultado_visitante: 1 }
+                ];
+                
+                // Datos simulados para semifinales
+                const semis = [
+                    { local: 'Deportivo Meta', visitante: 'Real Centauros', resultado_local: 2, resultado_visitante: 1 },
+                    { local: 'Deportivo Acacías', visitante: 'Alianza Oriental', resultado_local: 1, resultado_visitante: 3 }
+                ];
+                
+                // Datos simulados para final
+                const final = [
+                    { local: 'Deportivo Meta', visitante: 'Alianza Oriental', resultado_local: null, resultado_visitante: null }
+                ];
+                
+                // Datos simulados para tablas de equipos por fase
+                const equiposCuartos = [
+                    { nombre: 'Deportivo Meta', ciudad: 'Villavicencio', clasificado: true },
+                    { nombre: 'Atlético Villavicencio', ciudad: 'Villavicencio', clasificado: false },
+                    { nombre: 'Real Centauros', ciudad: 'Villavicencio', clasificado: true },
+                    { nombre: 'Llaneros FC', ciudad: 'Puerto López', clasificado: false },
+                    { nombre: 'Independiente Guamal', ciudad: 'Guamal', clasificado: false },
+                    { nombre: 'Deportivo Acacías', ciudad: 'Acacías', clasificado: true },
+                    { nombre: 'Alianza Oriental', ciudad: 'Granada', clasificado: true },
+                    { nombre: 'Halcones FC', ciudad: 'San Martín', clasificado: false }
+                ];
+                
+                const equiposSemis = [
+                    { nombre: 'Deportivo Meta', ciudad: 'Villavicencio', clasificado: true },
+                    { nombre: 'Real Centauros', ciudad: 'Villavicencio', clasificado: false },
+                    { nombre: 'Deportivo Acacías', ciudad: 'Acacías', clasificado: false },
+                    { nombre: 'Alianza Oriental', ciudad: 'Granada', clasificado: true }
+                ];
+                
+                const equiposFinal = [
+                    { nombre: 'Deportivo Meta', ciudad: 'Villavicencio', clasificado: null },
+                    { nombre: 'Alianza Oriental', ciudad: 'Granada', clasificado: null }
+                ];
+                
+                // Mostrar datos en la interfaz
+                mostrarCuadroEliminacion('cuartos-container', cuartos);
+                mostrarCuadroEliminacion('semis-container', semis);
+                mostrarCuadroEliminacion('final-container', final);
+                
+                mostrarTablaEquipos('tabla-cuartos', equiposCuartos);
+                mostrarTablaEquipos('tabla-semis', equiposSemis);
+                mostrarTablaEquipos('tabla-final', equiposFinal);
+            }, 500);
+            
+            // En un caso real, se haría una petición al backend
+            /*
+            fetch('../../backend/api/faseequipo.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        mostrarCuadroEliminacion('cuartos-container', data.data.cuartos);
+                        mostrarCuadroEliminacion('semis-container', data.data.semis);
+                        mostrarCuadroEliminacion('final-container', data.data.final);
+                        
+                        mostrarTablaEquipos('tabla-cuartos', data.data.equiposCuartos);
+                        mostrarTablaEquipos('tabla-semis', data.data.equiposSemis);
+                        mostrarTablaEquipos('tabla-final', data.data.equiposFinal);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar clasificaciones:', error);
+                });
+            */
+        }
+        
+        /**
+         * Muestra el cuadro de eliminación para una fase
+         */
+        function mostrarCuadroEliminacion(containerId, partidos) {
+            const container = document.getElementById(containerId);
+            
+            if (!partidos || partidos.length === 0) {
+                container.innerHTML = '<p>No hay partidos disponibles</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            partidos.forEach(partido => {
+                let localClass = '';
+                let visitanteClass = '';
+                
+                // Determinar ganador si hay resultado
+                if (partido.resultado_local !== null && partido.resultado_visitante !== null) {
+                    if (partido.resultado_local > partido.resultado_visitante) {
+                        localClass = 'winner';
+                        visitanteClass = 'loser';
+                    } else if (partido.resultado_local < partido.resultado_visitante) {
+                        localClass = 'loser';
+                        visitanteClass = 'winner';
+                    }
+                }
+                
+                html += `
+                    <div class="bracket-match">
+                        <div class="bracket-team ${localClass}">
+                            <span class="team-name">${partido.local}</span>
+                            <span class="team-score">${partido.resultado_local !== null ? partido.resultado_local : '-'}</span>
+                        </div>
+                        <div class="bracket-team ${visitanteClass}">
+                            <span class="team-name">${partido.visitante}</span>
+                            <span class="team-score">${partido.resultado_visitante !== null ? partido.resultado_visitante : '-'}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        /**
+         * Muestra la tabla de equipos para una fase
+         */
+        function mostrarTablaEquipos(tableId, equipos) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+            
+            if (!equipos || equipos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3">No hay equipos disponibles</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            
+            equipos.forEach(equipo => {
+                let estadoClass = '';
+                let estadoTexto = '';
+                
+                if (equipo.clasificado === true) {
+                    estadoClass = 'clasificado';
+                    estadoTexto = 'Clasificado';
+                } else if (equipo.clasificado === false) {
+                    estadoClass = 'no-clasificado';
+                    estadoTexto = 'Eliminado';
+                } else {
+                    estadoTexto = 'Pendiente';
+                }
+                
+                html += `
+                    <tr>
+                        <td>${equipo.nombre}</td>
+                        <td>${equipo.ciudad}</td>
+                        <td class="${estadoClass}">${estadoTexto}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
