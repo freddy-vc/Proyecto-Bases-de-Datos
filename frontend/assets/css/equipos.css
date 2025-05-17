@@ -1,0 +1,46 @@
+/* Estilos específicos para la página de equipos extraídos del bloque <style> */
+.equipos-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+.equipo-card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+.equipo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.equipo-logo {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    padding: 1rem;
+}
+.equipo-logo img {
+    max-height: 150px;
+    max-width: 100%;
+}
+.equipo-info {
+    padding: 1.5rem;
+}
+.equipo-nombre {
+    font-size: 1.5rem;
+    color: #1a3a6e;
+    margin-bottom: 0.5rem;
+}
+.equipo-ciudad {
+    color: #666;
+    margin-bottom: 1rem;
+}
+.equipo-dt {
+    font-style: italic;
+    color: #777;
+}

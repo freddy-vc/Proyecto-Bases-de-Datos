@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+header {
+    background: #2c3e50;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+}
+#jugadores-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    min-height: 200px;
+}
+.loading-message {
+    text-align: center;
+    color: #888;
+    font-size: 1.2rem;
+    margin-top: 2rem;
+}
+.jugador-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+.jugador-card:last-child {
+    border-bottom: none;
+}
+.jugador-foto {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #2c3e50;
+}
+.jugador-info {
+    flex: 1;
+}
+.jugador-nombre {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+.jugador-posicion {
+    color: #2980b9;
+    font-size: 0.95rem;
+}
+.jugador-equipo {
+    color: #888;
+    font-size: 0.9rem;
+}

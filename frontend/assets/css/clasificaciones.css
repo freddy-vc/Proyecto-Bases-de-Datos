@@ -1,0 +1,46 @@
+/* Estilos específicos para la página de clasificaciones extraídos del bloque <style> */
+.clasificaciones-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+.fase-title {
+    color: #1a3a6e;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #ffd700;
+    text-align: center;
+}
+.bracket {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+}
+.bracket-round {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+}
+.bracket-title {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: #1a3a6e;
+}
+.bracket-match {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.bracket-team {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+.bracket-team:last-child {
+    border-bottom: none;
+}

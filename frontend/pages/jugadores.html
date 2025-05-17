@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jugadores - Torneo de Futsala</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/jugadores.css">
+</head>
+<body>
+    <header id="main-header">
+        <div class="logo-container">
+            <a href="../index.html">
+                <img src="../assets/img/logo.svg" alt="Logo Torneo Futsala" id="logo">
+            </a>
+        </div>
+        <nav>
+            <ul class="menu">
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="clasificaciones.html">Clasificaciones</a></li>
+                <li><a href="encuentros.html">Partidos</a></li>
+                <li><a href="equipos.html">Equipos</a></li>
+                <li><a href="jugadores.html">Jugadores</a></li>
+                <li><a href="login.html" class="btn-login">Iniciar Sesión</a></li>
+                <li><a href="registro.html" class="btn-registro">Registro</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h1>Jugadores del Torneo</h1>
+            <p>Consulta la lista de jugadores participantes, sus estadísticas y fotos.</p>
+            <div id="jugadores-container">
+                <div class="loading-message">Cargando jugadores...</div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Torneo de Futsala Villavicencio. Todos los derechos reservados.</p>
+    </footer>
+    <script src="../assets/js/jugadores.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUserSession();
+        });
+        function checkUserSession() {
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                updateNavForLoggedUser(user);
+            }
+        }
+        function updateNavForLoggedUser(user) {
+            const navMenu = document.querySelector('.menu');
+            const loginBtn = document.querySelector('.btn-login')?.parentElement;
+            const registerBtn = document.querySelector('.btn-registro')?.parentElement;
+            if (loginBtn) loginBtn.remove();
+            if (registerBtn) registerBtn.remove();
+            const userDisplay = document.createElement('li');
+            userDisplay.textContent = `Bienvenido, ${user.username}`;
+            navMenu.appendChild(userDisplay);
+        }
+    </script>
+</body>
+</html>
